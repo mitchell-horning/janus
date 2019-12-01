@@ -1,7 +1,7 @@
 CREATE TABLE users
-(id VARCHAR(20) PRIMARY KEY,
- username VARCHAR(30),
- email VARCHAR(254),
+(id SERIAL PRIMARY KEY,
+ username VARCHAR(30) NOT NULL UNIQUE,
+ email VARCHAR(254) NOT NULL,
  admin BOOLEAN,
- last_login TIME,
- pass VARCHAR(300));
+ last_login DATE,
+ pass VARCHAR(300) NOT NULL);
