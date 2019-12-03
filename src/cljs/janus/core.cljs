@@ -1,47 +1,21 @@
 (ns janus.core
   (:require
-    [reagent.core :as r]
-    [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType]
-    [markdown.core :refer [md->html]]
-    [janus.ajax :as ajax]
-    [ajax.core :refer [GET POST]]
-    [reitit.core :as reitit]
-    [clojure.string :as string])
+   [reagent.core :as r]
+   [goog.events :as events]
+   [goog.history.EventType :as HistoryEventType]
+   [markdown.core :refer [md->html]]
+   [janus.ajax :as ajax]
+   [ajax.core :refer [GET POST]]
+   [reitit.core :as reitit]
+   [clojure.string :as string]
+   [janus.home-page :refer [home-page]])
   (:import goog.History))
 
 (defonce session (r/atom {:page :home}))
 
-(defn nav-link [uri title page]
-  [:a.navbar-item
-   {:href   uri
-    :class (when (= page (:page @session)) "is-active")}
-   title])
-
-(defn navbar []
-  (r/with-let [expanded? (r/atom false)]
-    [:nav.navbar.is-info>div.container
-     [:div.navbar-brand
-      [:a.navbar-item {:href "/" :style {:font-weight :bold}} "janus"]
-      [:span.navbar-burger.burger
-       {:data-target :nav-menu
-        :on-click #(swap! expanded? not)
-        :class (when @expanded? :is-active)}
-       [:span][:span][:span]]]
-     [:div#nav-menu.navbar-menu
-      {:class (when @expanded? :is-active)}
-      [:div.navbar-start
-       [nav-link "#/" "Home" :home]
-       [nav-link "#/about" "About" :about]]]]))
-
 (defn about-page []
   [:section.section>div.container>div.content
    [:img {:src "/img/warning_clojure.png"}]])
-
-(defn home-page []
-  [:section.section>div.container>div.content
-   (when-let [docs (:docs @session)]
-     [:div {:dangerouslySetInnerHTML {:__html (md->html docs)}}])])
 
 (def pages
   {:home #'home-page
@@ -55,23 +29,25 @@
 
 (def router
   (reitit/router
-    [["/" :home]
-     ["/about" :about]]))
+   [["/" :home]
+    ["/about" :about]]))
 
 (defn match-route [uri]
   (->> (or (not-empty (string/replace uri #"^.*#" "")) "/")
        (reitit/match-by-path router)
        :data
        :name))
+
 ;; -------------------------
 ;; History
 ;; must be called after routes have been defined
+
 (defn hook-browser-navigation! []
   (doto (History.)
     (events/listen
-      HistoryEventType/NAVIGATE
-      (fn [event]
-        (swap! session assoc :page (match-route (.-token event)))))
+     HistoryEventType/NAVIGATE
+     (fn [event]
+       (swap! session assoc :page (match-route (.-token event)))))
     (.setEnabled true)))
 
 ;; -------------------------
@@ -80,7 +56,6 @@
   (GET "/docs" {:handler #(swap! session assoc :docs %)}))
 
 (defn ^:dev/after-load mount-components []
-  (r/render [#'navbar] (.getElementById js/document "navbar"))
   (r/render [#'page] (.getElementById js/document "app")))
 
 (defn init! []
