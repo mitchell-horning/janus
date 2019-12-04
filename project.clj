@@ -70,7 +70,8 @@
   :npm-deps [[shadow-cljs "2.8.69"]
              [create-react-class "15.6.3"]
              [react "16.8.6"]
-             [react-dom "16.8.6"]]
+             [react-dom "16.8.6"]
+             [cytoscape "3.12.1"]]
 
   :profiles
   {:uberjar {:omit-source true
