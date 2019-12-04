@@ -1,7 +1,16 @@
 (ns janus.home-page
   (:require
+   [reagent.core :as r]
    [re-com.core :refer [box v-box h-box button h-split border
-                        title input-textarea]]))
+                        title input-textarea]]
+   [janus.cytoscape-graph :refer [cytoscape-graph]]))
+
+(defonce graph (r/atom {:elements [{:group "nodes" :data {:id "a"}}
+                                   {:group "nodes" :data {:id "b"}}
+                                   {:group "nodes" :data {:id "c"}}
+                                   {:group "edges" :data {:id "ab"
+                                                          :source "a"
+                                                          :target "b"}}]}))
 
 (defn title-box []
   [box
@@ -19,7 +28,7 @@
            :height "600px"
            :width "100%"
            :style {:resize "vertical"}
-           :model "TBD"
+           :model (pr-str @graph)
            :on-change #()]] )
 
 (defn info-buttons []
@@ -33,13 +42,11 @@
 (defn top-bar []
   [h-box
    :height "40px"
+   :class "bg-info"
    :align :center
    :justify :between
    :children [[info-buttons]
               [button :class "btn btn-default" :label "Log In"]]])
-
-(defn graph-box []
-  [box :child "TBD"])
 
 (defn home-page []
   [h-split
@@ -56,4 +63,4 @@
              :size "auto"
              :class "bg-primary"
              :children [[top-bar]
-                        [graph-box]]]])
+                        [cytoscape-graph @graph]]]])
