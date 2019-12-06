@@ -40,7 +40,8 @@
                  [selmer "1.12.17"]
                  [thheller/shadow-cljs "2.8.69" :scope "provided"]
 
-                 [re-com "2.6.0"]]
+                 [re-com "2.6.0"]
+                 [org.clojure/test.check "0.10.0"]]
 
   :min-lein-version "2.0.0"
 
@@ -64,6 +65,7 @@
      :devtools {:watch-dir "resources/public"}}
     :test
     {:target :node-test
+     :runtime :browser
      :output-to "target/test/test.js"
      :autorun true}}}
 
@@ -71,7 +73,9 @@
              [create-react-class "15.6.3"]
              [react "16.8.6"]
              [react-dom "16.8.6"]
-             [cytoscape "3.12.1"]]
+             [cytoscape "3.12.1"]
+             [cytoscape-cise "1.0.0"]
+             [xmlhttprequest "1.8.0"]]
 
   :profiles
   {:uberjar {:omit-source true
@@ -91,7 +95,7 @@
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2019-07-08"]
                                  [ring/ring-devel "1.8.0"]
-                                 [ring/ring-mock "0.4.0"]]
+                                 [ring/ring-mock "0.4.0"]                                 ]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.5"]]
 

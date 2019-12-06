@@ -1,4 +1,4 @@
-(ns janus.cytoscape-graph
+(ns janus.cytoscape-component
   (:require [reagent.core :as r]
             ["cytoscape" :as cytoscape]))
 
@@ -31,6 +31,7 @@
       :component-did-update
       (fn [this]
         (-> @cy (.elements "node") .remove)
+        (println (:elements (r/props this)))
         (run! #(.add @cy (clj->js %))
               (:elements (r/props this) ))
         (-> @cy
