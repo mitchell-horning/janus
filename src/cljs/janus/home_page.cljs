@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as r]
    [re-com.core :refer [box v-box h-box button h-split border
-                        title input-textarea]]
+                        title input-textarea modal-panel]]
    [janus.cytoscape-component :refer [cytoscape-graph]]
    [janus.graph :refer [str->graph]]))
 
@@ -37,17 +37,44 @@
                 (reset! text s))]))
 
 (defn work-space []
-[box
- :size "auto"
- :child [graph-editor init-graph-str]] )
+  [box
+   :size "auto"
+   :child [graph-editor init-graph-str]] )
+
+(defn static-info-dialog [label child]
+  (let [show? (r/atom false)]
+    (fn []
+      [v-box
+       :children [[button
+                   :label label
+                   :class "btn btn-info"
+                   :on-click #(reset! show? true)]
+                  (when @show?
+                    [modal-panel
+                     :child child
+                     :backdrop-on-click #(reset! show? false)])]])))
+
+(defn user-guide-dialog []
+  [static-info-dialog
+   "User Guide"
+   [title
+    :label "TODO"
+    :level :level2]])
+
+(defn about-dialog []
+  [static-info-dialog
+   "About"
+   [title
+    :label "TODO"
+    :level :level2]])
 
 (defn info-buttons []
-[h-box
- :align :center
- :justify :start
- :gap "4px"
- :children [[button :class "btn btn-info" :label "User Guide"]
-            [button :class "btn btn-info" :label "About"]]])
+  [h-box
+   :align :center
+   :justify :start
+   :gap "4px"
+   :children [[user-guide-dialog]
+              [about-dialog]]])
 
 (defn top-bar []
 [h-box

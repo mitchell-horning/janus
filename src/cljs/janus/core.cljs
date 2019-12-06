@@ -13,13 +13,8 @@
 
 (defonce session (r/atom {:page :home}))
 
-(defn about-page []
-  [:section.section>div.container>div.content
-   [:img {:src "/img/warning_clojure.png"}]])
-
 (def pages
-  {:home #'home-page
-   :about #'about-page})
+  {:home #'home-page})
 
 (defn page []
   [(pages (:page @session))])
