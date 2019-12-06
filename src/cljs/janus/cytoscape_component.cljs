@@ -1,20 +1,27 @@
 (ns janus.cytoscape-component
   (:require [reagent.core :as r]
-            ["cytoscape" :as cytoscape]))
+            ["cytoscape" :as cytoscape]
+            ["cytoscape-cise" :as cise]))
 
 (defn- cytoscape-graph-inner []
   (let [cy (atom nil)
         defaults {:style
                   [{:selector "node"
                     :style {"background-color" "black"
-                            "label" "data(id)"}}
+                            "color" "white"
+                            "label" "data(id)"
+                            "text-halign" "center"
+                            "text-valign" "center"}}
                    {:selector "edge"
                     :style {"line-color" "black"
                             "curve-style" "bezier"
                             "target-arrow-shape" "triangle"
-                            "target-arrow-color" "black"}}]
-                  :layout
-                  {:name "circle" :rows 1}}]
+                            "target-arrow-color" "black"}}]}
+        run-layout (fn [cytoscape-atom]
+                     (-> @cy
+                         (.elements "node")
+                         (.layout (clj->js {:name "cise"}))
+                         (.run)))]
     (r/create-class
      {:display-name "cytoscape-inner"
 
@@ -26,18 +33,17 @@
         (let [config (merge defaults
                             {:container (r/dom-node this)}
                             (r/props this))]
-          (reset! cy (cytoscape (clj->js config)))))
+          (reset! cy (cytoscape (clj->js config)))
+          (.use cytoscape cise)
+          (run-layout cy)))
 
       :component-did-update
       (fn [this]
         (-> @cy (.elements "node") .remove)
-        (println (:elements (r/props this)))
         (run! #(.add @cy (clj->js %))
               (:elements (r/props this) ))
-        (-> @cy
-            (.elements "node")
-            (.layout (clj->js {:name "circle"}))
-            (.run)))})))
+        (if-not (empty? (:elements (r/props this)))
+          (run-layout cy)))})))
 
 (defn cytoscape-graph []
   (fn [g] [cytoscape-graph-inner g]))
