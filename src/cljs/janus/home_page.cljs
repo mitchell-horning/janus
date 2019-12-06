@@ -3,14 +3,10 @@
    [reagent.core :as r]
    [re-com.core :refer [box v-box h-box button h-split border
                         title input-textarea]]
-   [janus.cytoscape-graph :refer [cytoscape-graph]]))
+   [janus.cytoscape-component :refer [cytoscape-graph]]
+   [janus.graph :refer [str->graph]]))
 
-(defonce graph (r/atom {:elements [{:group "nodes" :data {:id "a"}}
-                                   {:group "nodes" :data {:id "b"}}
-                                   {:group "nodes" :data {:id "c"}}
-                                   {:group "edges" :data {:id "ab"
-                                                          :source "a"
-                                                          :target "b"}}]}))
+(defonce graph (r/atom nil))
 
 (defn title-box []
   [box
@@ -21,15 +17,22 @@
            :level :level1
            :style {:font-size "32px"}]])
 
+(defn graph-editor []
+  (let [text (r/atom nil)]
+    [input-textarea
+     :height "600px"
+     :width "100%"
+     :style {:resize "vertical"}
+     :change-on-blur? false
+     :model text
+     :on-change (fn [s]
+                  (reset! graph (str->graph s))
+                  (reset! text s))]))
+
 (defn work-space []
   [box
    :size "auto"
-   :child [input-textarea
-           :height "600px"
-           :width "100%"
-           :style {:resize "vertical"}
-           :model (pr-str @graph)
-           :on-change #()]] )
+   :child [graph-editor]] )
 
 (defn info-buttons []
   [h-box
